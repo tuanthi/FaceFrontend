@@ -9,7 +9,8 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/Rank/Rank';
 import './App.css';
 
-const host = 'https://lit-ravine-86331.herokuapp.com'
+const host = 'https://lit-ravine-86331.herokuapp.com';
+// const host = 'http://127.0.0.1:3000';
 
 const particlesOptions = {
   particles: {
@@ -27,6 +28,7 @@ const initialState = {
   input: '',
   imageUrl: '',
   box: {},
+  demo: {},
   route: 'signin',
   isSignedIn: false,
   user: {
@@ -67,8 +69,24 @@ class App extends Component {
     }
   }
 
-  displayFaceBox = (box) => {
-    this.setState({box: box});
+  extractDemo = (data) => {
+    console.log(data);
+    const clarifaiDemo = data.outputs[0].data.regions[0].data.face;
+    return {
+      age_name: clarifaiDemo.age_appearance.concepts[0].name,
+      age_conf: clarifaiDemo.age_appearance.concepts[0].value,
+      gender_name: clarifaiDemo.gender_appearance.concepts[0].name,
+      gender_conf: clarifaiDemo.gender_appearance.concepts[0].value,
+      race_name: clarifaiDemo.multicultural_appearance.concepts[0].name,
+      race_conf: clarifaiDemo.multicultural_appearance.concepts[0].value
+    }
+  }
+
+  displayFaceBox = (box, demo) => {
+    this.setState({
+      box: box,
+      demo: demo
+    });
   }
 
   onInputChange = (event) => {
@@ -97,8 +115,11 @@ class App extends Component {
             .then(response => response.json())
             .then(count => {
               if (response.outputs[0] && response.outputs[0].data.regions) {
-                this.setState(Object.assign(this.state.user, { entries: count}))
-                this.displayFaceBox(this.calculateFaceLocation(response))
+                this.setState(Object.assign(this.state.user, { entries: count}));
+                this.displayFaceBox(
+                  this.calculateFaceLocation(response),
+                  this.extractDemo(response)
+                );
               }
             })
             .catch(console.log)
@@ -117,7 +138,7 @@ class App extends Component {
   }
 
   render() {
-    const { isSignedIn, imageUrl, route, box } = this.state;
+    const { isSignedIn, imageUrl, route, box, demo } = this.state;
     return (
       <div className="App">
          <Particles className='particles'
@@ -135,7 +156,7 @@ class App extends Component {
                 onInputChange={this.onInputChange}
                 onButtonSubmit={this.onButtonSubmit}
               />
-              <FaceRecognition box={box} imageUrl={imageUrl} />
+              <FaceRecognition box={box} imageUrl={imageUrl} demo={demo} />
             </div>
           : (
              route === 'signin'

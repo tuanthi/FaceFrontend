@@ -6,3 +6,15 @@
   justify-content: center;
   cursor: pointer;
 }
+
+.demo-text {
+  position: absolute;
+  box-shadow: 0 0 0 0 #149df2 inset;
+  color: #ff0000;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  cursor: pointer;
+  word-wrap: break-word;
+  text-align: left;
+}

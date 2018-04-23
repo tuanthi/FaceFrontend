@@ -1,6 +1,7 @@
 import React from 'react';
 
 const host = 'https://lit-ravine-86331.herokuapp.com';
+// const host = 'http://127.0.0.1:3000';
 
 class Register extends React.Component {
   constructor(props) {
